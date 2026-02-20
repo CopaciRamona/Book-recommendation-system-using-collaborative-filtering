@@ -1,0 +1,58 @@
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f1ea; /* Culoare crem stil Goodreads */
+    font-family: 'Georgia', serif;
+}
+
+.welcome-content {
+    background: white;
+    padding: 50px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+.welcome-logo {
+    font-size: 2.5rem;
+    color: #382110;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.welcome-subtitle {
+    color: #666;
+    margin-bottom: 30px;
+    font-family: sans-serif;
+}
+
+.btn-welcome {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    font-family: sans-serif;
+    transition: background 0.2s;
+}
+
+.btn-register {
+    background-color: #d6ad5b; /* Galbenul ala specific */
+    color: black;
+    border: 1px solid #c49b4a;
+}
+.btn-register:hover { background-color: #c49b4a; }
+
+.btn-login {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+}
+.btn-login:hover { background-color: #f0f0f0; }
