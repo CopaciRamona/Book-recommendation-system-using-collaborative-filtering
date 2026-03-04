@@ -1,0 +1,41 @@
+/* Sidebar.css */
+
+/* Fundalul negru care se îmbină perfect cu Home.jsx */
+.custom-sidebar {
+    background-color: #09090b; 
+    border-right: 1px solid rgba(147, 51, 234, 0.2) !important; 
+}
+
+/* Logo-ul BookAI în mov */
+.sidebar-logo {
+    color: #9333ea !important; 
+    transition: color 0.3s ease;
+    font-size: 2rem !important; /* Făcut mai mare */
+}
+
+.sidebar-logo:hover {
+    color: #c084fc !important; 
+}
+
+/* Stilul de bază pentru link-uri (inactiv) */
+.sidebar-link {
+    color: #a1a1aa !important; /* Gri specific dark-mode-ului */
+    transition: all 0.3s ease;
+    border-radius: 10px; 
+    padding: 16px 20px !important; /* Mărit padding-ul */
+    font-size: 1.25rem; /* SCRIS MAI MARE PENTRU TOATE BUTOANELE */
+}
+
+/* Efectul fin de mov când pui mouse-ul pe un link */
+.sidebar-link:hover {
+    background-color: rgba(147, 51, 234, 0.1) !important; 
+    color: #c084fc !important; 
+}
+
+/* Butonul activ (pagina pe care te afli) */
+.sidebar-link.active {
+    background-color: #9333ea !important; /* Mov electric */
+    color: #ffffff !important; /* Text alb */
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(147, 51, 234, 0.3); /* O mică umbră mov */
+}

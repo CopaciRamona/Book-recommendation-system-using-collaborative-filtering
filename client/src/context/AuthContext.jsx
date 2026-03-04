@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
         // Dacă profilul nu e complet, trimitem userul la configurare
         if (!userData.isProfileComplete) {
-            navigate('/profile-setup');
+            navigate('/update-profile');
         } else {
             navigate('/chatbot');
         }

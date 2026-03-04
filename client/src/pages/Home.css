@@ -1,0 +1,100 @@
+/* --- Paleta Dark Mode & Purple Accent --- */
+:root {
+  --bg-dark: #09090b;       /* Un negru foarte profund */
+  --card-bg: #18181b;       /* Negru-gri pentru carduri */
+  --accent-light: #c084fc;  /* Mov deschis pastelat */
+  --accent-main: #9333ea;   /* Violet electric */
+  --accent-dark: #581c87;   /* Violet profund */
+  --text-primary: #f8fafc;  /* Alb murdar (nu obosește ochii) */
+  --text-muted: #a1a1aa;    /* Gri deschis pentru text secundar */
+  --glass-border: rgba(147, 51, 234, 0.2);
+}
+
+.home-container {
+    background-color: var(--bg-dark);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+    color: var(--text-primary);
+}
+
+/* Titlu cu Gradient Mov */
+.modern-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-main) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+/* Cardurile - Dark Glassmorphism */
+.book-card-modern {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+    transition: all 0.4s ease !important;
+}
+
+/* Efectul WOW: Neon Glow la Hover */
+.book-card-modern:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 25px rgba(147, 51, 234, 0.4) !important; /* Strălucire mov */
+    border: 1px solid var(--accent-light) !important;
+}
+
+.book-cover-container {
+    margin: 12px;
+    border-radius: 14px;
+    height: 250px;
+    overflow: hidden;
+    position: relative;
+}
+
+.book-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    filter: brightness(0.9); /* O mică întunecare a pozei pe dark mode */
+}
+
+.book-card-modern:hover .book-cover-img {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* Badge pentru Stele */
+.rating-badge {
+    background: rgba(147, 51, 234, 0.15);
+    color: var(--accent-light);
+    border: 1px solid rgba(147, 51, 234, 0.3);
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+/* Butonul de Acțiune - Violet */
+.btn-modern-action {
+    background: linear-gradient(135deg, var(--accent-main) 0%, var(--accent-dark) 100%);
+    color: white !important;
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-modern-action:hover {
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-main) 100%);
+    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.5);
+    transform: scale(1.02);
+}
+
+/* Cardul pentru lipsa de recomandări */
+.empty-state-card {
+    background: var(--card-bg);
+    border: 1px dashed var(--accent-main);
+    color: var(--text-primary);
+}

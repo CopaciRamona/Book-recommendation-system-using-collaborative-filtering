@@ -7,6 +7,10 @@ import { errorHandler } from './middleware/errorMiddleware.js';
 import path from 'path'; // <--- 1. Importăm 'path'
 import { fileURLToPath } from 'url';
 import bookRoutes from './routes/bookRoutes.js';
+import libraryRoutes from './routes/libraryRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import recommendationRoutes from './routes/recommendationRoutes.js';
 
 // Încărcăm variabilele din .env
 dotenv.config();
@@ -27,6 +31,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // O rută simplă de test ca să vezi că merge în browser
 app.use('/api/auth/', authRoutes);
 app.use('/api/books/', bookRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/library/', libraryRoutes);
+app.use('/api/reviews/', reviewRoutes);
+app.use('/api/users/', userRoutes)
+
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
@@ -38,32 +47,10 @@ app.listen(PORT, async () => {
         console.log('✅ Database connected successfully!');
 
         // AICI ACTUALIZAM TABELELE, gen daca modificam ceva la structura tabelelor sa se modifice si in baza de date
-        await sequelize.sync({ alter: true }); 
+        await sequelize.sync(); 
+        // await sequelize.sync({ alter: true }); 
         // --- SCRIPT TEMPORAR PENTRU EXTRAGEREA GENURILOR ---
         console.log('✅ Tabelele au fost actualizate (synced)!');
-        // --- SCRIPT PENTRU CONTORIZARE GENURI ---
-        const allBooks = await Book.findAll({ attributes: ['genuri'], raw: true });
-const genreCounts = {};
-allBooks.forEach(book => {
-    if (book.genuri) {
-        const cleanString = book.genuri.replace(/[\[\]']/g, '');
-        const splitGenres = cleanString.split(',');
-        splitGenres.forEach(g => {
-            const trimmed = g.trim();
-            if(trimmed) {
-                genreCounts[trimmed] = (genreCounts[trimmed] || 0) + 1;
-            }
-        });
-    }
-});
-
-// Sortăm să vedem ce e mai popular
-const sortedGenres = Object.entries(genreCounts)
-    .sort((a, b) => b[1] - a[1]) // De la cel mai frecvent la cel mai rar
-    .slice(0, 30); // Luăm doar primele 30
-
-console.log("🌟 TOP 30 GENURI POPULARE (Folosește-le pe acestea în UI):");
-console.log(sortedGenres);
         
     } catch (err) {
         console.error('❌ Database connection error:', err);

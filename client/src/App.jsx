@@ -5,6 +5,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ProfileSetup from './pages/ProfileSetup';
 import { useAuth } from './context/AuthContext';
+import BookDetails from './pages/BookDetails';
+
+// Importăm noile componente pentru interfață
+import MainLayout from './components/MainLayout';
+import Home from './pages/Home';
 
 // 1. PAZNIC PENTRU PAGINILE PRINCIPALE (Home/Chatbot)
 const RequireCompleteProfile = ({ children }) => {
@@ -24,61 +29,73 @@ const RequireAuth = ({ children }) => {
   return user ? children : <Navigate to="/welcome" />;
 };
 
-// 3. NOU! PAZNIC PENTRU PAGINILE PUBLICE (Welcome, Login, Register)
-// Regula: Dacă ești logat, zburăm de aici!
+// 3. PAZNIC PENTRU PAGINILE PUBLICE (Welcome, Login, Register)
 const GuestRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
   if (loading) return <div>Se verifică...</div>;
   
-  // Dacă există un user logat, verificăm ce e cu el
   if (user) {
       if (!user.isProfileComplete) {
-          // Nu are profilul complet? Îl aruncăm înapoi în "închisoarea" formularului
           return <Navigate to="/update-profile" replace />;
       } else {
-          // Are profilul complet? Îl aruncăm pe Home
-          return <Navigate to="/home" replace />; // Schimbă cu /chatbot dacă e cazul
+          return <Navigate to="/home" replace />;
       }
   }
-  
-  // Dacă NU e logat, îl lăsăm să vadă pagina (copilul)
   return children;
 };
 
 function App() {
+  const { user } = useAuth();
+
   return (
     <>
-      <Navbar />
+      {/* Afișăm Navbar-ul de sus DOAR dacă userul NU are profilul complet 
+          (adică e vizitator, sau abia se loghează/face profilul).
+          În rest, în interiorul aplicației ne bazăm pe Sidebar! */}
+      {(!user || !user.isProfileComplete) && <Navbar />}
+
       <Routes>
         
-        {/* Acum "învelim" rutele publice cu GuestRoute */}
-        <Route path="/" element={
-            <GuestRoute><Welcome /></GuestRoute>
-        } />
-        <Route path="/welcome" element={
-            <GuestRoute><Welcome /></GuestRoute>
-        } />
-        <Route path="/login" element={
-            <GuestRoute><Login /></GuestRoute>
-        } />
-        <Route path="/register" element={
-            <GuestRoute><Register /></GuestRoute>
-        } />
+        {/* ========================================== */}
+        {/* RUTE PUBLICE (Fără Sidebar) */}
+        {/* ========================================== */}
+        <Route path="/" element={<GuestRoute><Welcome /></GuestRoute>} />
+        <Route path="/welcome" element={<GuestRoute><Welcome /></GuestRoute>} />
+        <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+        <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
         
-        {/* Ruta de Profil rămâne protejată doar de logare */}
+        {/* ========================================== */}
+        {/* RUTĂ DE SETARE PROFIL (Fără Sidebar) */}
+        {/* ========================================== */}
         <Route path="/update-profile" element={
             <RequireAuth>
                 <ProfileSetup />
             </RequireAuth>
         } />
 
-        {/* Ruta principală (Accesibilă doar cu profil 100% complet) */}
-        <Route path="/home" element={
+        {/* ========================================== */}
+        {/* RUTELE APLICAȚIEI (CU SIDEBAR) */}
+        {/* ========================================== */}
+        {/* Învelim MainLayout-ul în paznicul nostru. Astfel, TOATE rutele 
+            din interiorul lui vor fi automat protejate! */}
+        <Route element={
             <RequireCompleteProfile>
-                <div>Aici e pagina Home - Acces permis doar cu profil complet!</div>
+                <MainLayout />
             </RequireCompleteProfile>
-        } />
+        }>
+            {/* Aici intră paginile care se vor randa în <Outlet /> din MainLayout */}
+            <Route path="/home" element={<Home />} />
+            
+            {/* Pe măsură ce le construiești, le adaugi tot aici: */}
+            {/* <Route path="/library" element={<Library />} /> */}
+            {/* <Route path="/profile" element={<Profile />} /> */}
+            {/* <Route path="/chatbot" element={<Chatbot />} /> */}
+            <Route path="/book/:id" element={<BookDetails />} />
+        </Route>
+
+        {/* Fallback pentru rute inexistente */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
         
       </Routes>
     </>

@@ -1,10 +1,12 @@
 import express from 'express';
-import { getRecommendations } from '../controllers/bookController.js';
-import { protect } from '../middleware/authMiddleware.js'; // Doar userii logați primesc recomandări
+import { getBookById, searchBooks } from '../controllers/bookController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Ruta este protejată: trebuie să știm CINE e userul ca să îi știm genurile
-router.get('/recommendations', protect, getRecommendations);
+// Când cineva face GET pe /api/books/recommendations, va rula logica ta de Cold Start
+// Folosim middleware-ul 'protect' pentru că trebuie să extragem ID-ul userului din token
+router.get('/search', protect, searchBooks);
+router.get('/:id', protect, getBookById);
 
-export default router;
+export default router;  

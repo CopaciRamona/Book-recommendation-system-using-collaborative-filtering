@@ -52,33 +52,35 @@ const ProfileSetup = () => {
             submitData.append('location', formData.location);
             submitData.append('birthday', formData.birthday);
             
-            // Pentru genuri, le trimitem ca un string separat prin virgulă, sau le atașăm pe rând
-            formData.genuri.forEach(gen => {
-                submitData.append('genuri[]', gen); // Backend-ul va ști să le citească
-            });
+            // --- MODIFICARE AICI: Spunem backend-ului că profilul e gata! ---
+            submitData.append('isProfileComplete', true);
+            
+            // Pentru genuri, le trimitem ca un string separat prin virgulă (cea mai sigură metodă)
+            // Se potrivește perfect cu logica pe care am scris-o în backend!
+            submitData.append('genuri', formData.genuri.join(','));
 
             // Dacă a selectat o poză, o atașăm la pachet sub numele 'profile_picture'
             if (formData.profile_picture) {
                 submitData.append('profile_picture', formData.profile_picture);
             }
             
-            // 3. Trimitem cererea (Axios va seta automat header-ul 'multipart/form-data')
-            const response = await axios.post('/auth/update-profile', submitData, {
+            // --- MODIFICARE AICI: Folosim PUT către noua rută de Users ---
+            const response = await axios.put('/users/update-profile', submitData, {
                 headers: { 
                     Authorization: `Bearer ${token}` 
                     // Nu pune 'Content-Type': 'multipart/form-data' manual, axios îl pune singur corect!
                 }
             });
 
-            // Actualizăm starea userului în context
-            setUser(prev => ({ 
-                ...prev, 
-                isProfileComplete: true,
-                profile_picture: response.data.user.profile_picture // Salvăm poza și în context, dacă vrem să o afișăm pe viitor
-            }));
+            // --- MODIFICARE AICI: Actualizăm user-ul complet în Context și LocalStorage ---
+            const updatedUser = response.data.user;
+            setUser(updatedUser); 
+            localStorage.setItem('user', JSON.stringify(updatedUser)); // Îl salvăm ca să nu se piardă la Refresh
             
             alert("Profil salvat cu succes!");
-            navigate('/', { replace: true }); 
+            
+            // Îl trimitem către aplicație (am pus /chatbot cum ziceai că ai în Context, dar poți lăsa '/')
+            navigate('/recommendations', { replace: true }); 
             
         } catch (err) {
             console.error(err);

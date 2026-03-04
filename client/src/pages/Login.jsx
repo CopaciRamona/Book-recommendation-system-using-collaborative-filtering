@@ -62,7 +62,7 @@ const Login = () => {
 
             } else {
 
-                navigate('/home'); // Sau pagina ta principală
+                navigate('/recommendations'); // Sau pagina ta principală
 
             }
 

@@ -1,41 +1,79 @@
-import { Book, UserBook, User } from '../models/index.js';
+import { Book, UserBook, User, Review, GoodreadsReview } from '../models/index.js';
 import { Op } from 'sequelize';
 
-export const getRecommendations = async (req, res) => {
+export const getBookById = async (req, res, next) => {
     try {
-        const userId = req.user.id;
+        const bookId = req.params.id;
 
-        // 1. Verificăm interacțiunile (UserBook)
-        const userLibraryCount = await UserBook.count({ where: { userId } });
-
-        // 2. LOGICA COLD START (Bazată strict pe genurile alese la început)
-        if (userLibraryCount === 0) {
-            const user = await User.findByPk(userId);
-            
-            // Transformăm string-ul "Ficțiune,Mister" în array-ul ["Ficțiune", "Mister"]
-            const genresArray = user.genuri_preferate.split(',');
-
-            // Căutăm cărți care conțin în coloana titlu sau descriere oricare din aceste genuri
-            const recommendedBooks = await Book.findAll({
-                where: {
-                    [Op.or]: genresArray.map(genre => ({
-                        // Nota: Schimbă 'descriere' cu numele coloanei unde ții genurile în tabela books_goodreads dacă e cazul
-                        descriere: { [Op.like]: `%${genre.trim()}%` } 
-                    }))
+        const book = await Book.findByPk(bookId, {
+            include: [
+                {
+                    model: Review,
+                    as: 'appReviews',
+                    // MODIFICARE: Mapăm 'text_recenzie' la 'text' pentru frontend
+                    attributes: ['id', 'rating', ['text_recenzie', 'text'], 'createdAt'],
+                    include: [{
+                        model: User,
+                        as: 'user',
+                        attributes: ['nume', 'profile_picture']
+                    }]
                 },
-                limit: 20, // Îi dăm o listă mai generoasă la început
-                order: [['rating_mediu', 'DESC']] // Sortăm după cele mai bune note
-            });
+                {
+                    model: GoodreadsReview,
+                    as: 'goodreadsReviews',
+                    // MODIFICARE: Mapăm și aici 'text_recenzie' la 'text'
+                    attributes: ['id', 'rating','user_name', 'data_recenzie', ['text_recenzie', 'text']],
+                    limit: 10
+                }
+            ]
+        });
 
-            return res.json({ type: 'cold-start', books: recommendedBooks });
+        if (!book) {
+            return res.status(404).json({ message: "Cartea nu a fost găsită." });
         }
 
-        // 3. LOGICA COLLABORATIVE FILTERING
-        // (Vom reveni aici când facem algoritmul bazat pe ce au citit alții)
-        return res.json({ type: 'cf-placeholder', books: [] });
+        return res.status(200).json({
+            message: "Detalii carte preluate cu succes",
+            book: book
+        });
 
     } catch (error) {
-        console.error("Eroare recomandări:", error);
-        res.status(500).json({ message: "Eroare server" });
+        console.error("Eroare la preluarea cărții:", error);
+        next(error);
+    }
+};
+
+
+// Asigură-te că ai Op importat sus: import { Op } from 'sequelize';
+
+export const searchBooks = async (req, res, next) => {
+    try {
+        // Luăm termenul de căutare din URL (ex: /api/books/search?q=Harry)
+        const searchQuery = req.query.q;
+
+        if (!searchQuery) {
+            return res.status(400).json({ message: "Te rog introdu un termen de căutare." });
+        }
+
+        // Căutăm cărțile al căror titlu conține textul tastat
+        const books = await Book.findAll({
+            where: {
+                titlu: {
+                    [Op.like]: `%${searchQuery}%` // Semnul % înseamnă "orice text înainte sau după"
+                }
+            },
+            // Aducem doar detaliile necesare pentru a afișa o listă rapidă (scutim baza de date)
+            attributes: ['id', 'titlu', 'autor', 'coperta_url', 'rating_mediu'],
+            limit: 10 // Arătăm maxim 10 rezultate ca să nu blocăm ecranul
+        });
+
+        return res.status(200).json({
+            message: "Căutare finalizată",
+            books: books
+        });
+
+    } catch (error) {
+        console.error("Eroare la căutarea cărților:", error);
+        next(error);
     }
 };

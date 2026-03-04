@@ -38,6 +38,7 @@ export const registerUser = async (req, res, next) => {
                 id: newUser.id,
                 email: newUser.email,
                 nume: newUser.nume,
+                profile_picture: newUser.profile_picture,
                 isProfileComplete: false
             }
         });
@@ -78,6 +79,7 @@ export const loginUser = async (req, res, next) => {
                 id: user.id,
                 nume: user.nume,
                 email: user.email,
+                profile_picture: user.profile_picture,
                 isProfileComplete: isProfileComplete 
             }
         });
@@ -88,47 +90,3 @@ export const loginUser = async (req, res, next) => {
     }
 };
 
-export const updateProfile = async (req, res, next) => {
-
-    try {
-
-        const userId = req.user.id;
-        const { varsta, sex, genuri, location, birthday } = req.body;
-
-        const user = await User.findByPk(userId);
-        if(!user){
-            return res.status(404).json({ message: 'Utilizator negasit!'});
-        }
-
-        const genuriString = Array.isArray(genuri) ? genuri.join(',') : genuri;
-        user.varsta = varsta || user.varsta;
-        user.sex = sex || user.sex;
-        user.genuri_preferate = genuriString || user.genuri_preferate;
-        user.location = location || user.location;
-        user.birthday = birthday || user.birthday;
-
-        if (req.file) {
-            // Salvăm calea către poză în baza de date (ex: 'uploads/12345678-poza.jpg')
-            // Această cale va fi folosită de React pentru a afișa imaginea mai târziu
-            user.profile_picture = `/uploads/${req.file.filename}`;
-        }
-
-        await user.save();
-
-        return res.status(200).json({
-            message: "Profil completat cu succes!",
-            user:{
-                id: user.id,
-                nume: user.nume,
-                varsta: user.varsta,
-                sex: user.sex,
-                profile_picture: user.profile_picture,
-                isProfileComplete: true
-            }
-        })
-
-    } catch(error){
-        console.error("Eroare la completarea profilului!", error);
-        next(error);
-    }
-}
