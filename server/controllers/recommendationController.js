@@ -1,68 +1,98 @@
-import { Book, User, UserBook, Recommendation } from '../models/index.js';
+import { Book, User, UserBook, Recommendation, Review } from '../models/index.js';
 import { Op } from 'sequelize';
 
 export const getRecommendations = async (req, res, next) => {
     try {
         const userId = req.user.id;
+        const userLibrary = await UserBook.findAll({ 
+            where: { userId: userId }, 
+            attributes: ['bookId'] 
+        });
+        
+        const excludeIds = userLibrary.map(ub => Number(ub.bookId)); 
 
-        // =========================================================
-        // PASUL 1: Verificăm Tabelul de Recomandări 
-        // (Acesta va fi populat de Python / Collaborative Filtering)
-        // =========================================================
-        const userRecommendations = await Recommendation.findAll({
+        // 1. RECOMANDĂRI AI 
+        const savedRecommendations = await Recommendation.findAll({
             where: { userId: userId },
-            include: [{
-                model: Book,
-                as: 'book', // Asigură-te că alias-ul corespunde cu cel din index.js
-                attributes: ['id', 'titlu', 'autor', 'coperta_url', 'rating_mediu']
-            }],
-            order: [['score', 'DESC']], // Le sortăm după scorul calculat de algoritm
-            limit: 20
+            include: [{ model: Book, as: 'book' }],
+            order: [['score', 'DESC']]
         });
 
-        // Dacă avem recomandări precalculate în tabel, i le dăm pe acelea
-        if (userRecommendations && userRecommendations.length > 0) {
-            // Extragem doar cărțile din obiectul Recommendation
-            const recommendedBooks = userRecommendations.map(rec => rec.book);
+        if (savedRecommendations && savedRecommendations.length > 0) {
             
+            const filteredRecs = savedRecommendations.filter(rec => !excludeIds.includes(Number(rec.bookId)));
+
+            if (filteredRecs.length > 0) {
+                const books = filteredRecs.map(rec => ({
+                    ...rec.book.toJSON(),
+                    scor_ai: rec.score,
+                    motiv: rec.motiv
+                }));
+
+                const motivGeneral = filteredRecs[0].motiv || "Personalized recommendations";
+
+                return res.status(200).json({
+                    type: 'ai-content-based',
+                    message: motivGeneral,
+                    books: books
+                });
+            }
+        }
+        
+        // 2. COLD START 
+        const user = await User.findByPk(userId);
+
+        if (!user || !user.genuri_preferate) {
             return res.status(200).json({ 
-                type: 'collaborative-filtering', 
-                message: "Recomandări personalizate bazate pe algoritm",
-                books: recommendedBooks 
+                type: 'cold-start', 
+                message: 'Complete your profile or add your first book to your library to get recommendations!', 
+                books: [] 
             });
         }
 
-        // =========================================================
-        // PASUL 2: LOGICA COLD START (Fallback)
-        // Dacă tabelul e gol (user nou sau algoritmul nu a rulat)
-        // =========================================================
-        const user = await User.findByPk(userId);
-        
-        if (!user || !user.genuri_preferate) {
-            return res.status(200).json({ type: 'cold-start', books: [] });
+        const genresArray = user.genuri_preferate.replace(/[\[\]"']/g, '').split(',').map(g => g.trim()).filter(g => g);
+
+        let whereClause = {
+            [Op.or]: genresArray.map(genre => ({
+                genuri: { [Op.like]: `%${genre}%` } 
+            }))
+        };
+
+        if (excludeIds.length > 0) {
+            whereClause.id = { [Op.notIn]: excludeIds };
         }
 
-        const genresArray = user.genuri_preferate.split(',');
-
-        const coldStartBooks = await Book.findAll({
-            where: {
-                [Op.or]: genresArray.map(genre => ({
-                    // Înlocuiește 'genuri' cu numele coloanei tale (ex: descriere sau genuri)
-                    descriere: { [Op.like]: `%${genre.trim()}%` } 
-                }))
-            },
-            limit: 20,
-            order: [['rating_mediu', 'DESC']]
+        const rawBooks = await Book.findAll({
+            where: whereClause,
+            limit: 60, 
+            order: [
+                [Book.sequelize.literal('CAST(numar_voturi AS UNSIGNED)'), 'DESC'],
+                ['rating_mediu', 'DESC']
+            ]
         });
+
+        const diverseBooks = [];
+        const seenAuthors = new Set();
+
+        for (const book of rawBooks) {
+            if (!seenAuthors.has(book.autor)) {
+                diverseBooks.push(book);
+                seenAuthors.add(book.autor);
+            }
+            
+            if (diverseBooks.length >= 20) {
+                break;
+            }
+        }
 
         return res.status(200).json({ 
             type: 'cold-start', 
-            message: "Recomandări bazate pe genurile alese",
-            books: coldStartBooks 
+            message: "Top diverse recommendations from your favorite genres",
+            books: diverseBooks 
         });
 
     } catch (error) {
-        console.error("Eroare la preluarea recomandărilor:", error);
+        console.error("Error fetching recommendations:", error);
         next(error);
     }
 };

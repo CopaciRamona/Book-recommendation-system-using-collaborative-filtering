@@ -21,15 +21,12 @@ export const addReview = async (req, res, next) => {
         if (existingReview) {
             oldRating = existingReview.rating; 
             existingReview.rating = rating;
-            // 2. Actualizăm coloana corectă
             existingReview.text_recenzie = text_recenzie; 
             await existingReview.save();
         } else {
-            // 3. Creăm folosind numele corect de coloană
             await Review.create({ userId, bookId, rating, text_recenzie });
         }
 
-        // --- PARTEA DE LOGICĂ PENTRU DISTRIBUȚIE (Rămâne neschimbată, e ok) ---
         let distStr = book.rating_distributie || "{'5': '0', '4': '0', '3': '0', '2': '0', '1': '0'}";
         let validJsonStr = distStr.replace(/'/g, '"');
         let distObj = JSON.parse(validJsonStr);
@@ -57,7 +54,6 @@ export const addReview = async (req, res, next) => {
 
         let newAverage = totalVotes === 0 ? "0.00" : (totalScore / totalVotes).toFixed(2);
 
-        // --- SALVARE STATISTICI CARTE ---
         book.rating_distributie = JSON.stringify(distObj).replace(/"/g, "'");
         book.rating_mediu = String(newAverage);
         
@@ -80,7 +76,6 @@ export const addReview = async (req, res, next) => {
     }
 };
 
-// 2. RECENZIILE UTILIZATORULUI LOGAT
 export const getMyReviews = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -88,7 +83,6 @@ export const getMyReviews = async (req, res, next) => {
             where: { userId },
             include: [{ 
                 model: Book, 
-                // AICI ERA PROBLEMA: Trebuie să pui exact alias-ul din index.js
                 as: 'book', 
                 attributes: ['id', 'titlu', 'coperta_url', 'autor'] 
             }],
@@ -96,7 +90,6 @@ export const getMyReviews = async (req, res, next) => {
         });
         return res.status(200).json(reviews);
     } catch (error) {
-        // Dacă eroarea persistă, trimitem eroarea la middleware-ul de error handling
         next(error); 
     }
 };
@@ -115,25 +108,20 @@ try {
     const book = await Book.findByPk(review.bookId);
     const oldRating = review.rating;
 
-    // 1. Actualizăm datele recenziei
     review.rating = rating || review.rating;
     review.text_recenzie = text_recenzie || review.text_recenzie;
     await review.save();
 
-    // 2. Dacă nota s-a schimbat, recalculăm distribuția cărții
     if (rating && rating !== oldRating) {
         let distObj = JSON.parse(book.rating_distributie.replace(/'/g, '"'));
         const parseVotes = (str) => parseInt(String(str).replace(/,/g, ''), 10) || 0;
 
-        // Scădem nota veche
         const oldKey = String(oldRating);
         distObj[oldKey] = Math.max(0, parseVotes(distObj[oldKey]) - 1).toLocaleString('en-US');
 
-        // Adăugăm nota nouă
         const newKey = String(rating);
         distObj[newKey] = (parseVotes(distObj[newKey]) + 1).toLocaleString('en-US');
 
-        // Recalculăm media generală
         let totalVotes = 0;
         let totalScore = 0;
         for (let i = 1; i <= 5; i++) {
@@ -153,7 +141,6 @@ try {
 }
 };
 
-// 1. ȘTERGERE RECENZIE (cu recalculare statistici)
 export const deleteReview = async (req, res, next) => {
     try {
         const userId = req.user.id;
@@ -167,10 +154,7 @@ export const deleteReview = async (req, res, next) => {
         const bookId = review.bookId;
         const ratingDeSters = review.rating;
 
-        // Ștergem recenzia
         await review.destroy();
-
-        // RECALCULĂM STATISTICILE CĂRȚII
         const book = await Book.findByPk(bookId);
         if (book) {
             let distStr = book.rating_distributie || "{'5': '0', '4': '0', '3': '0', '2': '0', '1': '0'}";
@@ -178,12 +162,10 @@ export const deleteReview = async (req, res, next) => {
             
             const parseVotes = (str) => parseInt(String(str).replace(/,/g, ''), 10) || 0;
 
-            // Scădem votul din distribuție
             const starKey = String(ratingDeSters);
             let currentVotes = parseVotes(distObj[starKey]);
             distObj[starKey] = Math.max(0, currentVotes - 1).toLocaleString('en-US');
 
-            // Recalculăm media
             let totalVotes = 0;
             let totalScore = 0;
             for (let i = 1; i <= 5; i++) {
@@ -205,7 +187,7 @@ export const deleteReview = async (req, res, next) => {
     }
 };
 
-// pentru pescuirea recenziei
+
 export const checkUserReview = async (req, res, next) => {
     try {
         const userId = req.user.id;

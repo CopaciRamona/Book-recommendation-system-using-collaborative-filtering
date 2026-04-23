@@ -8,7 +8,7 @@ const GoodreadsReview = sequelize.define('GoodreadsReview', {
         autoIncrement: true
     },
     book_id_original: {
-        type: DataTypes.STRING, // ✅ Corectat! Acum e la fel ca în Book.js
+        type: DataTypes.STRING,
         allowNull: true
     },
     user_id: {

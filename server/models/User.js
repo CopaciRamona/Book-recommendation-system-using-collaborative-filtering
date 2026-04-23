@@ -51,6 +51,11 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING, 
         allowNull: true
     },
+    reading_goal: {
+    type: DataTypes.INTEGER,
+    defaultValue: 12, // Punem 12 ca valoare inițială ca să nu fie gol
+    allowNull: true,
+  },
     
     // --- SISTEM ---
     role: {

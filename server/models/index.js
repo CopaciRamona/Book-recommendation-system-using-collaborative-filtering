@@ -20,7 +20,6 @@ Review.belongsTo(Book, { foreignKey: 'bookId', as: 'book', onDelete: 'CASCADE' }
 User.hasMany(Recommendation, { foreignKey: 'userId', as: 'recommendations', onDelete: 'CASCADE' });
 Recommendation.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-// O Recomandare este legată de o Carte (cartea recomandată)
 Book.hasMany(Recommendation, { foreignKey: 'bookId', as: 'recommendationEntries', onDelete: 'CASCADE' });
 Recommendation.belongsTo(Book, { foreignKey: 'bookId', as: 'book' });
 

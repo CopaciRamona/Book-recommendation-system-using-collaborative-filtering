@@ -8,11 +8,11 @@ const Recommendation = sequelize.define('Recommendation', {
         autoIncrement: true
     },
     score: {
-        type: DataTypes.FLOAT, // Scorul de similaritate (ex: 0.95)
+        type: DataTypes.FLOAT,
         allowNull: true
     },
     motiv: {
-        type: DataTypes.STRING, // Ex: "Pentru că ai citit X"
+        type: DataTypes.STRING,
         allowNull: true
     }
 }, {
