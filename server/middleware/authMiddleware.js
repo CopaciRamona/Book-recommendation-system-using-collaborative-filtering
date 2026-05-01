@@ -15,8 +15,10 @@ export const protect = async (req, res, next) => {
         try {
 
         token=req.headers.authorization.split(' ')[1];
+        // În protect middleware:
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user=decoded;
+        console.log("Date utilizator din Token:", decoded); // Vezi dacă aici apare role: 'admin'
+        req.user = decoded;
         return next();
 
         } catch(error){

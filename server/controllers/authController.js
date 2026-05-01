@@ -2,7 +2,6 @@ import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-
 // Inregistrare
 export const registerUser = async (req, res, next) => {
     try {
@@ -26,7 +25,11 @@ export const registerUser = async (req, res, next) => {
         });
 
         const token = jwt.sign(
-            { id: newUser.id, email:newUser.email },
+            { 
+                id: newUser.id,
+                email: newUser.email,
+                role: newUser.role // <--- MODIFICAT: role în loc de rol
+            },
             process.env.JWT_SECRET || 'parola_secreta_temporara',
             { expiresIn: '24h' }
         );
@@ -39,7 +42,8 @@ export const registerUser = async (req, res, next) => {
                 email: newUser.email,
                 nume: newUser.nume,
                 profile_picture: newUser.profile_picture,
-                isProfileComplete: false
+                isProfileComplete: false,
+                role: newUser.role // <--- MODIFICAT: role în loc de rol
             }
         });
 
@@ -65,7 +69,11 @@ export const loginUser = async (req, res, next) => {
             return res.status(400).json({ message: "Email sau parola incorecta."});
         }
         const token = jwt.sign(
-            { id: user.id, email: user.email },
+            { 
+                id: user.id, 
+                email: user.email ,
+                role: user.role // <--- MODIFICAT: role în loc de rol
+            },
             process.env.JWT_SECRET || 'parola_secreta_temporara',
             { expiresIn: '24h' }
         );
@@ -80,7 +88,8 @@ export const loginUser = async (req, res, next) => {
                 nume: user.nume,
                 email: user.email,
                 profile_picture: user.profile_picture,
-                isProfileComplete: isProfileComplete 
+                isProfileComplete: isProfileComplete,
+                role: user.role // <--- MODIFICAT: role în loc de rol
             }
         });
 
@@ -89,4 +98,3 @@ export const loginUser = async (req, res, next) => {
         next(error);
     }
 };
-

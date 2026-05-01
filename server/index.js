@@ -12,7 +12,8 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import recommendationRoutes from './routes/recommendationRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
-import { trimiteReangajare } from './controllers/emailController.js';
+import emailRoutes from './routes/emailRoutes.js';
+
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ app.use('/api/library/', libraryRoutes);
 app.use('/api/reviews/', reviewRoutes);
 app.use('/api/users/', userRoutes)
 app.use('/api/chat', chatRoutes);
-app.get('/api/trigger-emails', trimiteReangajare);
+app.use('/api/emails', emailRoutes);
 
 app.use(errorHandler);
 
