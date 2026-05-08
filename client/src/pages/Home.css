@@ -1,100 +1,118 @@
-/* --- Paleta Dark Mode & Purple Accent --- */
 :root {
-  --bg-dark: #09090b;       /* Un negru foarte profund */
-  --card-bg: #18181b;       /* Negru-gri pentru carduri */
-  --accent-light: #c084fc;  /* Mov deschis pastelat */
-  --accent-main: #9333ea;   /* Violet electric */
-  --accent-dark: #581c87;   /* Violet profund */
-  --text-primary: #f8fafc;  /* Alb murdar (nu obosește ochii) */
-  --text-muted: #a1a1aa;    /* Gri deschis pentru text secundar */
-  --glass-border: rgba(147, 51, 234, 0.2);
+  --bg-dark: #09090b;       
+  --card-bg: rgba(24, 24, 27, 0.4);
+  --accent-light: #d8b4fe;  
+  --accent-main: #9333ea;  
+  --text-primary: #f8fafc;  
+  --text-muted: #a1a1aa;  
 }
 
 .home-container {
     background-color: var(--bg-dark);
     min-height: 100vh;
-    padding-bottom: 3rem;
-    color: var(--text-primary);
+    padding-bottom: 5rem;
 }
 
-/* Titlu cu Gradient Mov */
+
 .modern-title {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-main) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
     margin-bottom: 0.5rem;
 }
 
-/* Cardurile - Dark Glassmorphism */
-.book-card-modern {
-    background: var(--card-bg) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-    transition: all 0.4s ease !important;
+
+.subtitle-text {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    max-width: 600px;
 }
 
-/* Efectul WOW: Neon Glow la Hover */
-.book-card-modern:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 0 25px rgba(147, 51, 234, 0.4) !important; /* Strălucire mov */
-    border: 1px solid var(--accent-light) !important;
-}
 
-.book-cover-container {
-    margin: 12px;
-    border-radius: 14px;
-    height: 250px;
+.glass-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px);
     overflow: hidden;
-    position: relative;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
 }
 
-.book-cover-img {
+.cover-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3; 
+    overflow: hidden;
+}
+
+.cover-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.5s ease;
-    filter: brightness(0.9); /* O mică întunecare a pozei pe dark mode */
+    transition: transform 0.6s ease, filter 0.4s ease;
+    filter: brightness(0.85);
 }
 
-.book-card-modern:hover .book-cover-img {
-    transform: scale(1.05);
-    filter: brightness(1.1);
-}
-
-/* Badge pentru Stele */
-.rating-badge {
-    background: rgba(147, 51, 234, 0.15);
-    color: var(--accent-light);
-    border: 1px solid rgba(147, 51, 234, 0.3);
-    padding: 5px 12px;
-    border-radius: 50px;
+.floating-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    color: #fbbf24; 
+    padding: 6px 10px;
+    border-radius: 8px;
     font-weight: 700;
     font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 2;
 }
 
-/* Butonul de Acțiune - Violet */
-.btn-modern-action {
-    background: linear-gradient(135deg, var(--accent-main) 0%, var(--accent-dark) 100%);
-    color: white !important;
-    border: none;
-    border-radius: 12px;
-    padding: 10px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.card-info {
+    background: transparent;
 }
 
-.btn-modern-action:hover {
-    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-main) 100%);
-    box-shadow: 0 4px 15px rgba(147, 51, 234, 0.5);
-    transform: scale(1.02);
+.book-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
 }
 
-/* Cardul pentru lipsa de recomandări */
+.book-author {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+
+.glass-card:hover {
+    transform: translateY(-8px) scale(1.02); 
+    border-color: rgba(147, 51, 234, 0.4); 
+    box-shadow: 0 15px 30px rgba(147, 51, 234, 0.2), 0 5px 15px rgba(0,0,0,0.6); 
+    background: rgba(30, 27, 36, 0.8); 
+}
+
+
+.glass-card:hover .cover-image {
+    transform: scale(1.08);
+    filter: brightness(1.1); 
+}
+
+
+.glass-card:hover .book-title {
+    color: var(--accent-light);
+}
+
+
 .empty-state-card {
     background: var(--card-bg);
-    border: 1px dashed var(--accent-main);
-    color: var(--text-primary);
+    border: 1px dashed rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
 }

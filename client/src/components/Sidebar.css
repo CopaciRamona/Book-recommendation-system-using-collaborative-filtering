@@ -1,41 +1,119 @@
-/* Sidebar.css */
 
-/* Fundalul negru care se îmbină perfect cu Home.jsx */
 .custom-sidebar {
     background-color: #09090b; 
     border-right: 1px solid rgba(147, 51, 234, 0.2) !important; 
 }
 
-/* Logo-ul BookAI în mov */
-.sidebar-logo {
-    color: #9333ea !important; 
+
+@keyframes spinMagic {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.sidebar-logo-container {
+    transition: all 0.3s ease;
+}
+
+.sidebar-logo-icon {
+    color: #d8b4fe;
+    font-size: 1.5rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(147, 51, 234, 0.6));
+    display: inline-block;
+    animation: spinMagic 6s linear infinite;
+    transition: color 0.3s ease, filter 0.3s ease;
+}
+
+.sidebar-logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #f4f4f5;
     transition: color 0.3s ease;
-    font-size: 2rem !important; /* Făcut mai mare */
 }
 
-.sidebar-logo:hover {
-    color: #c084fc !important; 
+.sidebar-logo-container:hover .sidebar-logo-icon {
+    color: #c084fc;
+    filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.8));
 }
 
-/* Stilul de bază pentru link-uri (inactiv) */
+.sidebar-logo-container:hover .sidebar-logo-text {
+    color: #d8b4fe;
+}
+
+.sidebar-icon {
+    transition: all 0.3s ease;
+    /* Culoarea implicită gri */
+    color: #a1a1aa; 
+}
+
+
+.profile-placeholder-icon {
+    color: #a1a1aa;
+}
+
 .sidebar-link {
-    color: #a1a1aa !important; /* Gri specific dark-mode-ului */
+    color: #a1a1aa !important; 
     transition: all 0.3s ease;
     border-radius: 10px; 
-    padding: 16px 20px !important; /* Mărit padding-ul */
-    font-size: 1.25rem; /* SCRIS MAI MARE PENTRU TOATE BUTOANELE */
+    padding: 16px 20px !important;
+    font-size: 1.25rem;
 }
 
-/* Efectul fin de mov când pui mouse-ul pe un link */
+
 .sidebar-link:hover {
     background-color: rgba(147, 51, 234, 0.1) !important; 
     color: #c084fc !important; 
 }
 
-/* Butonul activ (pagina pe care te afli) */
+
+.sidebar-link:hover .sidebar-icon {
+    color: #c084fc;
+}
+
+
 .sidebar-link.active {
-    background-color: #9333ea !important; /* Mov electric */
-    color: #ffffff !important; /* Text alb */
+    background-color: #9333ea !important;
+    color: #ffffff !important; 
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(147, 51, 234, 0.3); /* O mică umbră mov */
+    box-shadow: 0 4px 10px rgba(147, 51, 234, 0.3);
+}
+
+
+.sidebar-link.active .sidebar-icon {
+    color: #ffffff;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+}
+
+
+.sidebar-logout-btn {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: #a1a1aa; 
+    transition: all 0.3s ease;
+    border-radius: 10px; 
+    padding: 16px 20px; 
+    font-size: 1.25rem; 
+    text-align: left;
+    cursor: pointer;
+    margin-top: 50px;
+}
+
+
+.logout-icon {
+    color: #a1a1aa;
+    transition: all 0.3s ease;
+}
+
+
+.sidebar-logout-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1); 
+    color: #ef4444; 
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+
+.sidebar-logout-btn:hover .logout-icon {
+    color: #ef4444;
 }

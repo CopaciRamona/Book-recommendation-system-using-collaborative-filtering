@@ -1,51 +1,48 @@
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Sparkles } from 'lucide-react'; 
+import './Welcome.css';
 
 const Welcome = () => {
     const { user } = useAuth();
 
-    // Redirecționare dacă este deja logat (opțional, poți activa când ești gata)
     if (user) { 
         return <Navigate to={user.isProfileComplete ? "/home" : "/update-profile"} />; 
     }
 
     return (
-        /* Container principal: Centrare totală, înălțime minimă ecran, font Serif */
-        <div className="d-flex flex-column align-items-center justify-content-center min-vh-100" 
-             style={{ backgroundColor: '#f4f1ea', fontFamily: "'Georgia', serif" }}>
-            
-            {/* Cardul central alb */}
-            <div className="card shadow-lg p-5 text-center border-0" 
-                 style={{ maxWidth: '450px', width: '90%', borderRadius: '15px' }}>
+        <div className="welcome-container">
+            <div className="welcome-glow"></div>
+            <div className="welcome-card card shadow-lg p-5 text-center border-0">
                 
-                <h1 className="fw-bold mb-2" style={{ color: '#382110', fontSize: '2.8rem' }}>
-                    BookRecommender
+                <h1 className="welcome-logo d-flex align-items-center justify-content-center gap-2 mb-3">
+                    <Sparkles size={32} className="logo-icon" />
+                    Nocturne
                 </h1>
                 
-                <p className="text-muted mb-4" style={{ fontFamily: 'sans-serif' }}>
-                    Descoperă cărțile care ți se potrivesc.
+                <p className="welcome-subtitle text-white-50 mb-5">
+                    Discover the books that match your soul.
                 </p>
 
-                <div className="d-flex flex-column gap-2">
-                    {/* Buton Register (Galben/Auriu) */}
-                    <Link to="/register" 
-                          className="btn fw-bold py-3 shadow-sm" 
-                          style={{ backgroundColor: '#d6ad5b', color: 'black', border: '1px solid #c49b4a' }}>
-                        Creează cont nou
+                <div className="d-flex flex-column gap-3">
+                    <Link to="/register" className="btn btn-register fw-bold py-3 shadow-sm">
+                        Create an Account
                     </Link>
                     
-                    <p className="my-2 text-muted small" style={{ fontFamily: 'sans-serif' }}>SAU</p>
-                    
-                    {/* Buton Login (Alb/Contur) */}
-                    <Link to="/login" 
-                          className="btn btn-outline-dark fw-bold py-3 shadow-sm">
-                        Intră în cont
+                    <div className="d-flex align-items-center my-2">
+                        <hr className="flex-grow-1 border-secondary opacity-25" />
+                        <span className="mx-3 text-white-50 small" style={{ fontFamily: '"Inter", sans-serif', letterSpacing: '2px' }}>OR</span>
+                        <hr className="flex-grow-1 border-secondary opacity-25" />
+                    </div>
+                
+                    <Link to="/login" className="btn btn-login fw-bold py-3 shadow-sm">
+                        Log In
                     </Link>
                 </div>
 
-                <footer className="mt-5 text-muted small" style={{ fontFamily: 'sans-serif' }}>
-                    &copy; 2024 Sistem de Recomandări Cărți
+                <footer className="mt-5 text-white-50 small" style={{ fontFamily: '"Inter", sans-serif', opacity: 0.5 }}>
+                    &copy; {new Date().getFullYear()} Nocturne AI
                 </footer>
             </div>
         </div>

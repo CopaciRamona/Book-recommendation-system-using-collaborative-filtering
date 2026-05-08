@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', token);
         setUser(userData);
 
-        // Dacă profilul nu e complet, trimitem userul la configurare
         if (!userData.isProfileComplete) {
             navigate('/update-profile');
         } else {

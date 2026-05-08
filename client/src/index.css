@@ -1,11 +1,14 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-
-body {
-  font-family: Arial, sans-serif;
-  background-color:black;
-  color: #333;
+::-webkit-scrollbar-track {
+  background: #1e1e2f;
+}
+::-webkit-scrollbar-thumb {
+  background: #495057;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9333ea;
 }

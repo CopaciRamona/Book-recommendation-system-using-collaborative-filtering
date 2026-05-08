@@ -6,12 +6,15 @@ import Register from './pages/Register';
 import ProfileSetup from './pages/ProfileSetup';
 import { useAuth } from './context/AuthContext';
 import BookDetails from './pages/BookDetails';
-
-// Importăm noile componente pentru interfață
+import Library from './pages/LIbrary'; // Ai grija la litera mare 'I' de aici
+import Profile from './pages/Profile';
+import Chatbot from './components/Chatbot';
+import Discover from './pages/Discover';
+import GenreBooks from './pages/GenreBooks';
 import MainLayout from './components/MainLayout';
 import Home from './pages/Home';
 
-// 1. PAZNIC PENTRU PAGINILE PRINCIPALE (Home/Chatbot)
+// 1. PAZNIC PENTRU PAGINILE PRINCIPALE
 const RequireCompleteProfile = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Se verifică...</div>;
@@ -29,7 +32,7 @@ const RequireAuth = ({ children }) => {
   return user ? children : <Navigate to="/welcome" />;
 };
 
-// 3. PAZNIC PENTRU PAGINILE PUBLICE (Welcome, Login, Register)
+// 3. PAZNIC PENTRU PAGINILE PUBLICE
 const GuestRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
@@ -50,54 +53,44 @@ function App() {
 
   return (
     <>
-      {/* Afișăm Navbar-ul de sus DOAR dacă userul NU are profilul complet 
-          (adică e vizitator, sau abia se loghează/face profilul).
-          În rest, în interiorul aplicației ne bazăm pe Sidebar! */}
       {(!user || !user.isProfileComplete) && <Navbar />}
 
       <Routes>
-        
-        {/* ========================================== */}
-        {/* RUTE PUBLICE (Fără Sidebar) */}
-        {/* ========================================== */}
+        {/* RUTE PUBLICE*/}
         <Route path="/" element={<GuestRoute><Welcome /></GuestRoute>} />
         <Route path="/welcome" element={<GuestRoute><Welcome /></GuestRoute>} />
         <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
         <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
         
-        {/* ========================================== */}
-        {/* RUTĂ DE SETARE PROFIL (Fără Sidebar) */}
-        {/* ========================================== */}
+        {/* RUTĂ DE SETARE PROFIL*/}
         <Route path="/update-profile" element={
             <RequireAuth>
                 <ProfileSetup />
             </RequireAuth>
         } />
 
-        {/* ========================================== */}
         {/* RUTELE APLICAȚIEI (CU SIDEBAR) */}
-        {/* ========================================== */}
-        {/* Învelim MainLayout-ul în paznicul nostru. Astfel, TOATE rutele 
-            din interiorul lui vor fi automat protejate! */}
         <Route element={
             <RequireCompleteProfile>
                 <MainLayout />
             </RequireCompleteProfile>
         }>
-            {/* Aici intră paginile care se vor randa în <Outlet /> din MainLayout */}
+            {/* Home-ul funcționează acum și ca Admin Dashboard */}
             <Route path="/home" element={<Home />} />
             
-            {/* Pe măsură ce le construiești, le adaugi tot aici: */}
-            {/* <Route path="/library" element={<Library />} /> */}
-            {/* <Route path="/profile" element={<Profile />} /> */}
-            {/* <Route path="/chatbot" element={<Chatbot />} /> */}
+            <Route path="/discover" element={<Discover />} />
+            <Route path="/library" element={<Library />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/book/:id" element={<BookDetails />} />
+            <Route path="/genre/:genreName" element={<GenreBooks />} />
         </Route>
 
         {/* Fallback pentru rute inexistente */}
         <Route path="*" element={<Navigate to="/home" replace />} />
         
       </Routes>
+
+      {user && user.isProfileComplete && <Chatbot />}
     </>
   );
 }
